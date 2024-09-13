@@ -105,7 +105,7 @@ export default function RegisterForm() {
                                 <FormSuccess message={success}/>
                                 <Button type={"submit"}
                                         className={cn("w-full my-4", status === "executing" ? "animate-pulse" : "")}>
-                                    Create new account
+                                    Register
                                 </Button>
                             </div>
                         </form>

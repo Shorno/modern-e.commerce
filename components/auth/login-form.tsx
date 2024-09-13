@@ -12,9 +12,12 @@ import {useAction} from "next-safe-action/hooks";
 import {emailSignIn} from "@/server/actions/email-signin";
 import {cn} from "@/lib/utils";
 import {useState} from "react";
+import {FormError} from "@/components/auth/form-error";
+import {FormSuccess} from "@/components/auth/form-success";
 
 export default function LoginForm() {
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     const form = useForm({
         resolver: zodResolver(LoginSchema),
@@ -25,8 +28,13 @@ export default function LoginForm() {
     });
 
     const {execute, status} = useAction(emailSignIn, {
-        onSuccess(data){
-            console.log(data)
+        onSuccess(data) {
+            console.log("Action response:", data);
+            if (data.data?.error) {
+                setError(data.data.error);
+            } else if (data.data?.success) {
+                setSuccess(data.data.success);
+            }
         }
     })
 
@@ -80,6 +88,8 @@ export default function LoginForm() {
                                 <Button size={"sm"} variant={"link"} asChild>
                                     <Link href={"/auth/reset"}>Forgot password?</Link>
                                 </Button>
+                                <FormSuccess message={success}/>
+                                <FormError message={error}/>
                                 <Button type={"submit"}
                                         className={cn("w-full my-2", status === "executing" ? "animate-pulse" : "")}>
                                     Login

@@ -33,7 +33,7 @@ export const EmailVerificationForm = () => {
             //     router.push("/auth/login");
             // }, 3000);
 
-                router.push("/auth/login");
+            router.push("/auth/login");
 
         }
     }, [token, success, error, router]);
@@ -45,7 +45,7 @@ export const EmailVerificationForm = () => {
 
     return (
         <AuthCard cardTitle={"Verify your account"} backButtonHref={"/auth/login"} backButtonLabel={"Back to login"}>
-            <div className={"flex items-center w-full justify-center "}>
+            <div className={"flex flex-col gap-4 items-center w-full justify-center "}>
                 <p>{!success && !error ? "Verifying email..." : null}</p>
                 <FormSuccess message={success || undefined}/>
                 <FormError message={error || undefined}/>
