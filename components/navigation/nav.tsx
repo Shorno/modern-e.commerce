@@ -11,24 +11,27 @@ export default async function Nav() {
     const expires = session?.expires;
     return (
         <>
-            <header className={"bg-slate-500 py-4"}>
+            <header className={"py-8 px-4"}>
                 <nav className={"container mx-auto"}>
                     <ul className={"flex justify-between"}>
-                            <Logo/>
-                            {!session ?
-                                (
-                                    <li>
-                                        <Button asChild>
-                                            <Link className={"flex gap-2"} href={"/auth/login"}><LogIn/><span>Login</span></Link>
-                                        </Button>
-                                    </li>
-                                )
-                                :
-                                (
-                                    <li><UserButton expires={expires!} user={user}/></li>
-                                )
+                        <li>
+                            <Link href={"/"}> <Logo/> </Link>
+                        </li>
+                        {!session ?
+                            (
+                                <li>
+                                    <Button asChild>
+                                        <Link className={"flex gap-2"}
+                                              href={"/auth/login"}><LogIn/><span>Login</span></Link>
+                                    </Button>
+                                </li>
+                            )
+                            :
+                            (
+                                <li><UserButton expires={expires!} user={user}/></li>
+                            )
 
-                            }
+                        }
                     </ul>
                 </nav>
             </header>

@@ -1,9 +1,11 @@
 import LoginForm from "@/components/auth/login-form";
 
-export default function Login(){
+export default function Login() {
     return (
         <>
-        <LoginForm/>
+            <div className={"px-4"}>
+                <LoginForm/>
+            </div>
         </>
     )
 }

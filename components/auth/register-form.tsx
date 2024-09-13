@@ -3,34 +3,44 @@ import {AuthCard} from "@/components/auth/auth-card";
 import {Form, FormField, FormControl, FormMessage, FormItem, FormLabel, FormDescription} from "@/components/ui/form";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {LoginSchema} from "@/types/login-schema";
 import {z} from "zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import Link from "next/link";
-import {useAction} from "next-safe-action/hooks";
-import {emailSignIn} from "@/server/actions/email-signin";
 import {cn} from "@/lib/utils";
 import {useState} from "react";
+import {RegisterSchema} from "@/types/register-schema";
+import {useAction} from "next-safe-action/hooks";
+import {emailRegister} from "@/server/actions/email-register";
+import {FormSuccess} from "@/components/auth/form-success";
+import {FormError} from "@/components/auth/form-error";
 
-export default function LoginForm() {
+export default function RegisterForm() {
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
-    const form = useForm({
-        resolver: zodResolver(LoginSchema),
+    const form = useForm<z.infer<typeof RegisterSchema>>({
+        resolver: zodResolver(RegisterSchema),
         defaultValues: {
             email: "",
             password: "",
+            name: "",
         }
     });
 
-    const {execute, status} = useAction(emailSignIn, {
-        onSuccess(data){
-            console.log(data)
-        }
-    })
 
-    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    const {execute, status} = useAction(emailRegister, {
+        onSuccess(data) {
+            console.log("Action response:", data);
+            if (data.data?.error) {
+                setError(data.data.error);
+            } else if (data.data?.success) {
+                setSuccess(data.data.success);
+            }
+        }
+    });
+
+
+    const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
         execute(values)
     }
 
@@ -38,15 +48,29 @@ export default function LoginForm() {
     return (
         <>
             <AuthCard
-                cardTitle={"Welcome back!"}
-                backButtonHref={"/auth/register"}
-                backButtonLabel={"Create new account"}
+                cardTitle={"Create an account 🥳"}
+                backButtonHref={"/auth/login"}
+                backButtonLabel={"Already have an account?"}
                 showSocials
             >
                 <div>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <div>
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Username</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter your username" {...field} type={"text"}/>
+                                            </FormControl>
+                                            <FormDescription></FormDescription>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField
                                     control={form.control}
                                     name="email"
@@ -77,12 +101,11 @@ export default function LoginForm() {
                                         </FormItem>
                                     )}
                                 />
-                                <Button size={"sm"} variant={"link"} asChild>
-                                    <Link href={"/auth/reset"}>Forgot password?</Link>
-                                </Button>
+                                <FormError message={error}/>
+                                <FormSuccess message={success}/>
                                 <Button type={"submit"}
-                                        className={cn("w-full my-2", status === "executing" ? "animate-pulse" : "")}>
-                                    Login
+                                        className={cn("w-full my-4", status === "executing" ? "animate-pulse" : "")}>
+                                    Create new account
                                 </Button>
                             </div>
                         </form>

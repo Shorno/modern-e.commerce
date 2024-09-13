@@ -19,7 +19,7 @@ export const AuthCard = ({
                          }: CardWrapperProps) => {
     return (
         <>
-            <Card>
+            <Card className={"lg:max-w-96 mx-auto"}>
                 <CardHeader>
                     <CardTitle>{cardTitle}</CardTitle>
                 </CardHeader>

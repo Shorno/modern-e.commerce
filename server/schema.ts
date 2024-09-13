@@ -3,18 +3,25 @@ import {
     pgTable,
     text,
     primaryKey,
-    integer,
+    integer, pgEnum, boolean,
 } from "drizzle-orm/pg-core"
-import type { AdapterAccountType } from "next-auth/adapters"
+import type {AdapterAccountType} from "next-auth/adapters"
+import {createId} from "@paralleldrive/cuid2";
+
+export const RoleEnum = pgEnum("roles", ["user", "admin"])
 
 export const users = pgTable("user", {
     id: text("id")
+        .notNull()
         .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()),
+        .$defaultFn(() => createId()),
     name: text("name"),
     email: text("email").unique(),
-    emailVerified: timestamp("emailVerified", { mode: "date" }),
+    emailVerified: timestamp("emailVerified", {mode: "date"}),
     image: text("image"),
+    password: text("password"),
+    twoFactorEnabled: boolean("twoFactorEnabled").default(false),
+    roles: RoleEnum("roles").default("user"),
 })
 
 export const accounts = pgTable(
@@ -22,7 +29,7 @@ export const accounts = pgTable(
     {
         userId: text("userId")
             .notNull()
-            .references(() => users.id, { onDelete: "cascade" }),
+            .references(() => users.id, {onDelete: "cascade"}),
         type: text("type").$type<AdapterAccountType>().notNull(),
         provider: text("provider").notNull(),
         providerAccountId: text("providerAccountId").notNull(),
@@ -37,6 +44,22 @@ export const accounts = pgTable(
     (account) => ({
         compoundKey: primaryKey({
             columns: [account.provider, account.providerAccountId],
+        }),
+    })
+)
+
+
+export const emailTokens = pgTable(
+    "email_tokens",
+    {
+        id: text("id").notNull().$defaultFn(() => createId()),
+        token: text("token").notNull(),
+        expires: timestamp("expires", {mode: "date"}).notNull(),
+        email: text("email").notNull(),
+    },
+    (verificationToken) => ({
+        compositePk: primaryKey({
+            columns: [verificationToken.id, verificationToken.token],
         }),
     })
 )
