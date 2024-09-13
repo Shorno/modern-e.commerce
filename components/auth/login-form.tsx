@@ -14,10 +14,13 @@ import {cn} from "@/lib/utils";
 import {useState} from "react";
 import {FormError} from "@/components/auth/form-error";
 import {FormSuccess} from "@/components/auth/form-success";
+import {useRouter} from "next/navigation";
+import {Loader2} from "lucide-react";
 
 export default function LoginForm() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const router = useRouter()
 
     const form = useForm({
         resolver: zodResolver(LoginSchema),
@@ -33,6 +36,10 @@ export default function LoginForm() {
             if (data.data?.error) {
                 setError(data.data.error);
             } else if (data.data?.success) {
+                setTimeout(() => {
+                    router.push("/")
+                    router.refresh();
+                }, 1000)
                 setSuccess(data.data.success);
             }
         }
@@ -90,9 +97,10 @@ export default function LoginForm() {
                                 </Button>
                                 <FormSuccess message={success}/>
                                 <FormError message={error}/>
+
                                 <Button type={"submit"}
                                         className={cn("w-full my-2", status === "executing" ? "animate-pulse" : "")}>
-                                    Login
+                                    {status === "executing" ? <Loader2 className={"animate-spin"}/> : "Login"}
                                 </Button>
                             </div>
                         </form>

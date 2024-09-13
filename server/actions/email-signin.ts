@@ -32,7 +32,7 @@ export const emailSignIn = actionClient.schema(LoginSchema)
                 password,
                 redirect: false,
             })
-            return {success: email};
+            return {success: "Signed in successfully"}
 
         } catch (error) {
             if (error instanceof AuthError) {
