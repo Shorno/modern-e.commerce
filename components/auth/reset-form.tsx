@@ -3,49 +3,43 @@ import {AuthCard} from "@/components/auth/auth-card";
 import {Form, FormField, FormControl, FormMessage, FormItem, FormLabel, FormDescription} from "@/components/ui/form";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {LoginSchema} from "@/types/login-schema";
 import {z} from "zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {useAction} from "next-safe-action/hooks";
-import {emailSignIn} from "@/server/actions/email-signin";
 import {cn} from "@/lib/utils";
 import {useState} from "react";
 import {FormError} from "@/components/auth/form-error";
 import {FormSuccess} from "@/components/auth/form-success";
-import {useRouter} from "next/navigation";
 import {Loader2} from "lucide-react";
+import {ResetSchema} from "@/types/reset-schema";
+import {reset} from "@/server/actions/password-reset";
 
-export default function LoginForm() {
+export default function ResetForm() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const router = useRouter()
 
-    const form = useForm({
-        resolver: zodResolver(LoginSchema),
+    const form = useForm<z.infer<typeof ResetSchema>>({
+        resolver: zodResolver(ResetSchema),
         defaultValues: {
             email: "",
-            password: "",
         }
     });
 
-    const {execute, status} = useAction(emailSignIn, {
+    const {execute, status} = useAction(reset, {
         onSuccess(data) {
             console.log("Action response:", data);
             if (data.data?.error) {
                 setError(data.data.error);
             } else if (data.data?.success) {
-                setTimeout(() => {
-                    router.push("/")
-                    router.refresh();
-                }, 1000)
                 setSuccess(data.data.success);
             }
         }
     })
 
-    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    const onSubmit = (values: z.infer<typeof ResetSchema>) => {
+
         setError("")
         execute(values)
     }
@@ -54,15 +48,16 @@ export default function LoginForm() {
     return (
         <>
             <AuthCard
-                cardTitle={"Welcome back!"}
-                backButtonHref={"/auth/register"}
-                backButtonLabel={"Create new account"}
+                cardTitle={"Forgot your password?"}
+                backButtonHref={"/auth/login"}
+                backButtonLabel={"Back to login"}
                 showSocials
             >
                 <div>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <div>
+
                                 <FormField
                                     control={form.control}
                                     name="email"
@@ -71,22 +66,9 @@ export default function LoginForm() {
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Enter your email" {...field} type={"email"}
-                                                       autoComplete={"email"}/>
-                                            </FormControl>
-                                            <FormDescription></FormDescription>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Password</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter your password" {...field} type={"text"}
-                                                       autoComplete={"current-password"}/>
+                                                       autoComplete={"email"}
+                                                       disabled={status === "executing"}
+                                                />
                                             </FormControl>
                                             <FormDescription></FormDescription>
                                             <FormMessage/>
@@ -101,7 +83,7 @@ export default function LoginForm() {
 
                                 <Button type={"submit"}
                                         className={cn("w-full my-2", status === "executing" ? "animate-pulse" : "")}>
-                                    {status === "executing" ? <Loader2 className={"animate-spin"}/> : "Login"}
+                                    {status === "executing" ? <Loader2 className={"animate-spin"}/> : "Reset password"}
                                 </Button>
                             </div>
                         </form>

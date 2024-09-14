@@ -1,7 +1,7 @@
 "use server"
 import {db} from "@/server";
 import {eq} from "drizzle-orm";
-import {emailTokens, users} from "@/server/schema";
+import {emailTokens, passwordResetTokens, users} from "@/server/schema";
 
 export const getVerificationTokenByEmail = async (token: string) => {
     try {
@@ -35,7 +35,8 @@ export const generateEmailVerificationToken = async (email: string) => {
 export const newVerificationToken = async (token: string) => {
     const existingToken = await getVerificationTokenByEmail(token);
     console.log("Existing Token", existingToken?.token);
-    if (!existingToken) return {error : "Token not found"};
+
+    if (!existingToken) return {error: "Token not found"};
 
     const hasExpired = new Date(existingToken.expires) < new Date();
 
@@ -61,4 +62,44 @@ export const newVerificationToken = async (token: string) => {
 
     return {success: "Email Verified"};
 
+}
+
+export const getPasswordResetTokenByToken = async (token: string) => {
+    try {
+        return await db.query.passwordResetTokens.findFirst({
+            where: eq(passwordResetTokens.token, token)
+        });
+    } catch (error) {
+        return null;
+    }
+}
+export const getPasswordResetTokenByTokenByEmail = async (email: string) => {
+    try {
+        return await db.query.passwordResetTokens.findFirst({
+            where: eq(passwordResetTokens.email, email)
+        });
+    } catch (error) {
+        return null;
+    }
+}
+
+export const generatePasswordResetToken = async (email: string) => {
+    try {
+        const token = crypto.randomUUID();
+        const expires = new Date(new Date().getTime() + 3600 * 1000);
+
+        const existingToken = await getPasswordResetTokenByTokenByEmail(email);
+
+        if (existingToken) {
+            await db.delete(passwordResetTokens).where(eq(passwordResetTokens.id, email));
+        }
+
+        return db.insert(passwordResetTokens).values({
+            email,
+            token,
+            expires
+        }).returning();
+    } catch (error) {
+        return null;
+    }
 }
