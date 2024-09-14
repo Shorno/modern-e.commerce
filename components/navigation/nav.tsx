@@ -19,7 +19,7 @@ export default async function Nav() {
                         </li>
                         {!session ?
                             (
-                                <li>
+                                <li className={"items-center flex justify-between"}>
                                     <Button asChild>
                                         <Link className={"flex gap-2"}
                                               href={"/auth/login"}><LogIn/><span>Login</span></Link>
