@@ -1,5 +1,4 @@
 import {auth} from "@/server/auth";
-import Logo from "@/components/navigation/logo";
 import {UserButton} from "@/components/navigation/user-button";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
@@ -15,7 +14,9 @@ export default async function Nav() {
                 <nav className={"container mx-auto"}>
                     <ul className={"flex justify-between"}>
                         <li>
-                            <Link href={"/"}> <Logo/> </Link>
+                            <Link href={"/"}>
+                            <h1 className={"font-fascinate text-4xl"}>Next Store</h1>
+                            </Link>
                         </li>
                         {!session ?
                             (
@@ -28,7 +29,7 @@ export default async function Nav() {
                             )
                             :
                             (
-                                <li><UserButton expires={expires!} user={user}/></li>
+                                <li><UserButton expires={expires!} user={user!}/></li>
                             )
 
                         }
