@@ -38,7 +38,7 @@ type SettingsForm = {
 export default function SettingsCard(session: SettingsForm) {
     const [error, setError] = useState<string | undefined>()
     const [success, setSuccess] = useState<string | undefined>()
-    const [avatarUploading, setAvatarUploading] = useState<boolean>(false)
+    const [avatarUploading] = useState<boolean>(false)
 
 
     const form = useForm<z.infer<typeof SettingsSchema>>({
