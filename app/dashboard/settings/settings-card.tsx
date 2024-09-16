@@ -166,14 +166,17 @@ export default function SettingsCard(session: SettingsForm) {
                             <FormField
                                 control={form.control}
                                 name="isTwoFactorEnabled"
-                                render={({}) => (
+                                render={({field}) => (
                                     <FormItem>
                                         <FormLabel>Two Factor Authentication</FormLabel>
                                         <FormDescription>
                                             Enable two factor authentication for your account
                                         </FormDescription>
                                         <FormControl>
-                                            <Switch disabled={status === "executing" || session.session.user.isOAuth}/>
+                                            <Switch disabled={status === "executing" || session.session.user.isOAuth}
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                            />
                                         </FormControl>
                                         <FormMessage/>
                                     </FormItem>

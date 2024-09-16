@@ -93,7 +93,7 @@ export default function LoginForm() {
                                         </FormItem>
                                     )}
                                 />
-                                <Button size={"sm"} variant={"link"} asChild>
+                                <Button size={"sm"} className={"px-0"} variant={"link"} asChild>
                                     <Link href={"/auth/reset"}>Forgot password?</Link>
                                 </Button>
                                 <FormSuccess message={success}/>

@@ -10,8 +10,8 @@ import {FormError} from "@/components/auth/form-error";
 export const EmailVerificationForm = () => {
     const token = useSearchParams().get("token");
     const router = useRouter();
-    const [error, setError] = useState<string | null>("");
-    const [success, setSuccess] = useState<string | null>("");
+    const [error, setError] = useState<string | undefined>("");
+    const [success, setSuccess] = useState<string | undefined>("");
 
     const handleVerification = useCallback(async () => {
         if (success || error) {
@@ -47,8 +47,8 @@ export const EmailVerificationForm = () => {
         <AuthCard cardTitle={"Verify your account"} backButtonHref={"/auth/login"} backButtonLabel={"Back to login"}>
             <div className={"flex flex-col gap-4 items-center w-full justify-center "}>
                 <p>{!success && !error ? "Verifying email..." : null}</p>
-                <FormSuccess message={success || undefined}/>
-                <FormError message={error || undefined}/>
+                <FormSuccess message={success}/>
+                <FormError message={error}/>
             </div>
         </AuthCard>
     );

@@ -6,7 +6,7 @@ export const SettingsSchema = z.object({
     isTwoFactorEnabled: z.optional(z.boolean()),
     email: z.optional(z.string()),
     password: z.optional(z.string().min(8)),
-    newPassword: z.optional(z.string().min(8))
+    newPassword: z.optional(z.string().min(8, {message: "Password must be at least 8 characters"})),
 }).refine(data => {
     return !(data.password && !data.newPassword);
 }, {message: "New password is required", path: ["newPassword"]})
