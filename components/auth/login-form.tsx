@@ -16,13 +16,19 @@ import {FormError} from "@/components/auth/form-error";
 import {FormSuccess} from "@/components/auth/form-success";
 import {useRouter} from "next/navigation";
 import {Loader2} from "lucide-react";
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from "@/components/ui/input-otp"
 
 export default function LoginForm() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [showTwoFactor, setShowTwoFactor] = useState(false);
     const router = useRouter()
 
-    const form = useForm({
+    const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
             email: "",
@@ -41,6 +47,9 @@ export default function LoginForm() {
                     router.refresh();
                 }, 1000)
                 setSuccess(data.data.success);
+            }
+            if (data.data?.twoFactor) {
+                setShowTwoFactor(true)
             }
         }
     })
@@ -63,36 +72,69 @@ export default function LoginForm() {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <div>
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Email</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter your email" {...field} type={"email"}
-                                                       autoComplete={"email"}/>
-                                            </FormControl>
-                                            <FormDescription></FormDescription>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Password</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter your password" {...field} type={"text"}
-                                                       autoComplete={"current-password"}/>
-                                            </FormControl>
-                                            <FormDescription></FormDescription>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
+                                {showTwoFactor && (
+                                    <FormField
+                                        control={form.control}
+                                        name="code"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Two factor code sent to your email.</FormLabel>
+                                                <FormControl>
+                                                    <InputOTP disabled={status === "executing"} {...field}
+                                                              maxLength={6}>
+                                                        <InputOTPGroup>
+                                                            <InputOTPSlot index={0}/>
+                                                            <InputOTPSlot index={1}/>
+                                                            <InputOTPSlot index={2}/>
+                                                            <InputOTPSlot index={3}/>
+                                                            <InputOTPSlot index={4}/>
+                                                            <InputOTPSlot index={5}/>
+                                                        </InputOTPGroup>
+                                                    </InputOTP>
+                                                </FormControl>
+                                                <FormDescription></FormDescription>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+                                {!showTwoFactor && (
+                                    <>
+                                        <FormField
+                                            control={form.control}
+                                            name="email"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Email</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter your email" {...field} type={"email"}
+                                                               autoComplete={"email"}/>
+                                                    </FormControl>
+                                                    <FormDescription></FormDescription>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="password"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Password</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter your password" {...field}
+                                                               type={"text"}
+                                                               autoComplete={"current-password"}/>
+                                                    </FormControl>
+                                                    <FormDescription></FormDescription>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </>
+                                )}
+
+
                                 <Button size={"sm"} className={"px-0"} variant={"link"} asChild>
                                     <Link href={"/auth/reset"}>Forgot password?</Link>
                                 </Button>
@@ -100,8 +142,9 @@ export default function LoginForm() {
                                 <FormError message={error}/>
 
                                 <Button type={"submit"}
-                                        className={cn("w-full my-2", status === "executing" ? "animate-pulse" : "")}>
-                                    {status === "executing" ? <Loader2 className={"animate-spin"}/> : "Login"}
+                                        className={cn("w-full my-2")}>
+                                    {showTwoFactor ? "Verify" : status === "executing" ? <Loader2 className={"animate-spin"}/> : "Login"}
+                                    {/*{status === "executing" ? <Loader2 className={"animate-spin"}/> : "Login"}*/}
                                 </Button>
                             </div>
                         </form>
