@@ -25,7 +25,7 @@ export const UserButton = ({user}: Session) => {
 
     useEffect(() => {
         setSwitchState()
-    }, [theme])
+    })
 
     function setSwitchState() {
         switch (theme) {
@@ -113,7 +113,9 @@ export const UserButton = ({user}: Session) => {
                         <DropdownMenuItem onClick={() => signOut()}
                                           className={"py-2 font-medium cursor-pointer focus:bg-destructive/30 group"}
                         >
-                            <LogOut className={"mr-2 px-1 group-hover:scale-90 transition-all duration-300 ease-in-out"}/> Sign Out
+                            <LogOut
+                                className={"mr-2 px-1 group-hover:scale-90 transition-all duration-300 ease-in-out"}/> Sign
+                            Out
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
