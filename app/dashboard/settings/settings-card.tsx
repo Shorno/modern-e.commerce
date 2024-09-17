@@ -29,6 +29,7 @@ import {FormSuccess} from "@/components/auth/form-success";
 import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import {settings} from "@/server/actions/settings";
+import {UploadButton} from "@/app/api/uploadthing/upload";
 
 type SettingsForm = {
     session: Session
@@ -38,7 +39,7 @@ type SettingsForm = {
 export default function SettingsCard(session: SettingsForm) {
     const [error, setError] = useState<string | undefined>()
     const [success, setSuccess] = useState<string | undefined>()
-    const [avatarUploading] = useState<boolean>(false)
+    const [avatarUploading, setAvatarUploading] = useState<boolean>(false)
 
 
     const form = useForm<z.infer<typeof SettingsSchema>>({
@@ -105,7 +106,7 @@ export default function SettingsCard(session: SettingsForm) {
                             />
                             <FormField
                                 control={form.control}
-                                name="name"
+                                name="image"
                                 render={({field}) => (
                                     <FormItem>
                                         <FormLabel>Avatar</FormLabel>
@@ -126,6 +127,34 @@ export default function SettingsCard(session: SettingsForm) {
                                                     />
                                                 )
                                             }
+                                            <UploadButton
+                                                className={"scale-75 ut-button:bg-primary/75 hover:ut-button:bg-primary/100 ut-button:transition-all ut-button-duration-500" +
+                                                    "ut-label:hidden ut-allowed-content:hidden"}
+                                                endpoint={"avatarUploader"}
+                                                onUploadBegin={() => {
+                                                    setAvatarUploading(true)
+                                                }}
+                                                onUploadError={(error) => {
+                                                    form.setError("image", {
+                                                        type: "validate",
+                                                        message: error.message
+                                                    })
+                                                    setAvatarUploading(false)
+                                                    return
+                                                }}
+                                                onClientUploadComplete={(res) => {
+                                                    form.setValue("image", res[0].url!)
+                                                    setAvatarUploading(false)
+                                                }}
+                                                content={{
+                                                    button({ready}) {
+                                                        if (ready) {
+                                                            return <div>Change Avatar</div>
+                                                        }
+                                                        return <div>Uploading...</div>
+                                                    }
+                                                }}
+                                            />
                                         </div>
                                         <FormControl>
                                             <Input type={"hidden"} placeholder="Enter your name"
