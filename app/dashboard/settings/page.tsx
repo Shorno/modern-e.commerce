@@ -4,7 +4,6 @@ import SettingsCard from "@/app/dashboard/settings/settings-card";
 
 export default async function Settings() {
     const session = await auth();
-    console.log(session)
     if (!session) {
         redirect("/")
     }
