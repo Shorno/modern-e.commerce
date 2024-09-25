@@ -1,7 +1,19 @@
-export default function AddProduct() {
+import {auth} from "@/server/auth";
+import {redirect} from "next/navigation";
+import ProductForm from "@/app/dashboard/add-product/product-form";
+
+export default async function AddProduct() {
+    const session = await auth();
+
+    if (session?.user.role !== 'admin') {
+        return redirect('/dashboard/settings');
+    }
+
     return (
-        <div>
-            <h1>Add Product</h1>
-        </div>
+        <>
+            <div className={"container mx-auto"}>
+                <ProductForm/>
+            </div>
+        </>
     )
 }

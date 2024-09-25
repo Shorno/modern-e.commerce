@@ -3,7 +3,7 @@ import {
     pgTable,
     text,
     primaryKey,
-    integer, pgEnum, boolean,
+    integer, pgEnum, boolean, serial,
 } from "drizzle-orm/pg-core"
 import type {AdapterAccountType} from "next-auth/adapters"
 import {createId} from "@paralleldrive/cuid2";
@@ -88,3 +88,12 @@ export const twoFactorTokens = pgTable("two_factor_tokens", {
         columns: [twoFactorToken.id, twoFactorToken.token],
     }),
 }))
+
+
+export const products = pgTable("products", {
+    id: serial("id").primaryKey(),
+    description: text("description").notNull(),
+    title: text("title").notNull(),
+    created : timestamp("created").defaultNow(),
+    price: integer("price").notNull(),
+})
