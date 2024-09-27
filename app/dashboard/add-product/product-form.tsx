@@ -11,6 +11,9 @@ import {Button} from "@/components/ui/button";
 import {DollarSign} from "lucide-react";
 import Tiptap from "@/app/dashboard/add-product/tiptap";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useAction} from "next-safe-action/hooks";
+import {createProduct} from "@/server/actions/create-product";
+
 
 
 export default function ProductForm() {
@@ -22,10 +25,20 @@ export default function ProductForm() {
             price: 0,
         },
     })
-    const onSubmit = () => {
-        console.log("Form submitted")
-    }
 
+    const {execute, status} = useAction(createProduct, {
+        onSuccess: (data) => {
+            if (data.data?.success) {
+                console.log(data.data.success)
+            } else if (data.data?.error) {
+                console.log(data.data.error)
+            }
+        }
+    })
+
+    const onSubmit = (values: z.infer<typeof ProductSchema>) => {
+        execute(values)
+    }
 
     return (
 
@@ -89,8 +102,10 @@ export default function ProductForm() {
 
                             {/*<FormError message={error}/>*/}
                             {/*<FormSuccess message={success}/>*/}
-                            <Button type={"submit"}>
-                                Register
+                            <Button
+                                disabled={status === "executing" || !form.formState.isValid || !form.formState.isDirty}
+                                type={"submit"}>
+                                Submit
                             </Button>
                         </div>
                     </form>
