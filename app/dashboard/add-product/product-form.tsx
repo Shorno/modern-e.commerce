@@ -5,8 +5,6 @@ import {ProductSchema} from "@/types/product-schema";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Form, FormField, FormControl, FormMessage, FormItem, FormLabel, FormDescription} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {FormError} from "@/components/auth/form-error";
-import {FormSuccess} from "@/components/auth/form-success";
 import {Button} from "@/components/ui/button";
 import {DollarSign} from "lucide-react";
 import Tiptap from "@/app/dashboard/add-product/tiptap";
@@ -100,8 +98,6 @@ export default function ProductForm() {
                                 )}
                             />
 
-                            {/*<FormError message={error}/>*/}
-                            {/*<FormSuccess message={success}/>*/}
                             <Button
                                 disabled={status === "executing" || !form.formState.isValid || !form.formState.isDirty}
                                 type={"submit"}>
